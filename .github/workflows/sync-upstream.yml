@@ -42,11 +42,14 @@ jobs:
           echo "::set-output name=new_commits::false"
         fi
 
-    - name: Merge upstream changes
+   - name: Merge upstream changes
       if: steps.check.outputs.new_commits == 'true'
       run: |
-        git merge upstream/main --allow-unrelated-histories # 如果使用不同的分支名称，请调整
-
+        git merge upstream/main --allow-unrelated-histories || true
+        git checkout --theirs .
+        git add .
+        git commit -m "Resolved merge conflicts by accepting upstream changes"
+        
     - name: Push changes to fork repository
       if: steps.check.outputs.new_commits == 'true'
       run: |
