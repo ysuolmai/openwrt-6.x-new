@@ -40,7 +40,7 @@ jobs:
     - name: Merge upstream changes
       if: steps.check.outputs.new_commits == 'true'
       run: |
-        git merge upstream/main  # 如果使用不同的分支名称，请调整
+        git merge upstream/main --allow-unrelated-histories # 如果使用不同的分支名称，请调整
 
     - name: Push changes to fork repository
       if: steps.check.outputs.new_commits == 'true'
