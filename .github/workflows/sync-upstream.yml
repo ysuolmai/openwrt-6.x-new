@@ -1,55 +1,17 @@
-name: Sync Fork with Upstream
-
+name: autoupdate
 on:
-  schedule:
-    - cron: '0 0 * * *'  # 每天凌晨执行同步，可以根据需要调整时间
-  workflow_dispatch:  # 允许手动触发工作流
-
+  # This will trigger on all pushes to all branches.
+  push: {}
+  # Alternatively, you can only trigger if commits are pushed to certain branches, e.g.:
+  # push:
+  #   branches:
+  #     - master
+  #     - unstable
 jobs:
-  sync:
-    runs-on: ubuntu-latest
-
+  autoupdate:
+    name: autoupdate
+    runs-on: ubuntu-22.04
     steps:
-    - name: Checkout your repository
-      uses: actions/checkout@v2
-      with:
-        persist-credentials: false
-
-    - name: Set up Git identity
-      run: |
-        git config --local user.name "GitHub Action"
-        git config --local user.email "action@github.com"
-
-    - name: Add upstream repository
-      run: git remote add upstream https://github.com/King-Of-Knights/openwrt-6.x.git
-
-    - name: Fetch upstream
-      run: git fetch upstream
-
-    - name: Check for new commits
-      id: check
-      run: |
-        CURRENT_HASH=$(git rev-parse HEAD)
-        UPSTREAM_HASH=$(git rev-parse upstream/main)
-        if [ "$CURRENT_HASH" != "$UPSTREAM_HASH" ]; then
-          echo "New commits are available."
-          echo "::set-output name=new_commits::true"
-        else
-          echo "No new commits."
-          echo "::set-output name=new_commits::false"
-        fi
-
-    - name: Merge upstream changes
-      if: steps.check.outputs.new_commits == 'true'
-      run: |
-        git merge upstream/main --allow-unrelated-histories || true
-        git checkout --theirs .
-        git add .
-        git commit -m "Resolved merge conflicts by accepting upstream changes"
-
-    - name: Push changes to fork repository
-      if: steps.check.outputs.new_commits == 'true'
-      run: |
-        git push origin main
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker://chinthakagodawita/autoupdate-action:v1
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
