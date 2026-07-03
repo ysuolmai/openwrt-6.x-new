@@ -1,3 +1,7 @@
+# 高质量<付费>中转站
+
+https://sc.350303.xyz/register?aff=C8X8NEL4BXX6
+
 # 适用于 IPQ系列设备的 OpenWrt 源码仓库
 
 ## 注意
